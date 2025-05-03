@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Alat AI Gambar Canggih</title>
+    <link rel="stylesheet" href="assets/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-top">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <h1><i class="fas fa-robot"></i> SICBA</h1>
+                <p class="header-subtitle">Squad Image Creator Bing AI</p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <!-- Generator Teks ke Gambar -->
+        <div class="tool-container">
+            <button class="toggle-header" id="generatorToggle">
+                <h2><i class="fas fa-wand-magic-sparkles"></i> Text-To-Image</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            
+            <div class="toggle-content" id="generatorContent">
+                <div class="neumorphic-card">
+                    <p>Masukkan prompt</p>           
+                    <div class="textarea-container">
+                    	                        <button id="clearPromptBtn" class="neumorphic-btn btn-secondary">
+                            <i class="fas fa-trash"></i> Clear Prompt
+                        </button>
+<div class="prompt-button-container">
+                     <!--   <div class="enhance-prompt-container">
+                            <button id="enhancePromptBtn" class="neumorphic-btn btn-secondary">
+                                <i class="fas fa-wand-magic-sparkles"></i> Enhance Prompt
+                            </button>
+                            <span class="enhance-tooltip">Get AI suggestions to improve your prompt (GPT-4 Turbo)</span>
+                        </div> -->
+                        
+
+                    </div>
+                        <textarea id="generatorPrompt" class="neumorphic-textarea" placeholder="Contoh: Sebuah pemandangan gunung dengan matahari terbenam, gaya lukisan minyak"></textarea>
+                    </div>
+                                        
+                    <button id="generateBtn" class="neumorphic-btn btn-primary">
+                        <i class="fas fa-wand-magic-sparkles"></i> Hasilkan Gambar
+                    </button>
+                    
+                    <h3>Ukuran Gambar</h3>
+                    <select id="imageSize" class="neumorphic-select">
+                        <option value="1024x1792" selected>Portrait (1024×1792)</option>
+                        <option value="1024x1024">Persegi (1024×1024)</option>
+                        <option value="1792x1024">Lansekap (1792×1024)</option>
+                    </select>
+                    
+                    <div class="advanced-panel">
+                        <div class="advanced-toggle" id="advancedToggle">
+                            <i class="fas fa-cog"></i>
+                            <span style="margin-left: 10px;">Pengaturan Lanjutan</span>
+                            <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
+                        </div>
+                        <div class="advanced-content" id="advancedContent">
+                            <div class="advanced-grid">
+                                <div>
+                                    <label for="negativePrompt">Prompt Negatif:</label>
+                                    <input type="text" id="negativePrompt" class="neumorphic-input" 
+                                           placeholder="Apa yang tidak ingin muncul di gambar">
+                                    
+                                    <label for="seedInput">Seed (opsional):</label>
+                                    <input type="number" id="seedInput" class="neumorphic-input" 
+                                           placeholder="Angka acak untuk hasil yang konsisten">
+                                    
+                                    <div class="slider-container">
+                                        <div class="slider-label">
+                                            <span>Kreativitas</span>
+                                            <span id="creativityValue">50%</span>
+                                        </div>
+                                        <input type="range" min="0" max="100" value="50" class="neumorphic-slider" id="creativitySlider">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="slider-container">
+                                        <div class="slider-label">
+                                            <span>Detail Gambar</span>
+                                            <span id="detailValue">70%</span>
+                                        </div>
+                                        <input type="range" min="0" max="100" value="70" class="neumorphic-slider" id="detailSlider">
+                                    </div>
+                                    
+                                    <div class="slider-container">
+                                        <div class="slider-label">
+                                            <span>Kesamaan Gaya</span>
+                                            <span id="styleValue">60%</span>
+                                        </div>
+                                        <input type="range" min="0" max="100" value="60" class="neumorphic-slider" id="styleSlider">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <label>Gaya Artistik:</label>
+                            <div class="style-presets">
+                                <div class="style-preset" data-style="realistic">Realistis</div>
+                                <div class="style-preset" data-style="ghibli">Ghibli</div>
+                                <div class="style-preset" data-style="professional-photo">Professional Photo</div>
+                                <div class="style-preset" data-style="oil-painting">Lukisan Minyak</div>
+                                <div class="style-preset" data-style="watercolor">Cat Air</div>
+                                <div class="style-preset" data-style="anime">Anime</div>
+                                <div class="style-preset" data-style="cyberpunk">Cyberpunk</div>
+                                <div class="style-preset" data-style="pixel-art">Pixel Art</div>
+                                <div class="style-preset" data-style="3d-render">3D Render</div>
+                                <div class="style-preset" data-style="low-poly">Low Poly</div>
+                            </div>
+
+                            <div class="slider-container">
+                                <div class="slider-label">
+                                    <span>Kualitas Gambar</span>
+                                    <span id="qualityValue">85%</span>
+                                </div>
+                                <input type="range" min="50" max="100" value="85" class="neumorphic-slider" id="qualitySlider">
+                            </div>
+
+                            <label>Preset Kualitas:</label>
+                            <div class="quality-presets">
+                                <div class="quality-preset" data-quality="50">Cepat</div>
+                                <div class="quality-preset active" data-quality="85">Standar</div>
+                                <div class="quality-preset" data-quality="95">Premium</div>
+                                <div class="quality-preset" data-quality="100">Maksimal</div>
+                            </div>
+                            
+                            <label>Aspek Tambahan:</label>
+                            <div class="action-buttons">
+                                <button id="addLightingBtn" class="neumorphic-btn">
+                                    <i class="fas fa-sun"></i> Pencahayaan
+                                </button>
+                                <button id="addColorBtn" class="neumorphic-btn">
+                                    <i class="fas fa-palette"></i> Warna
+                                </button>
+                                <button id="addCompositionBtn" class="neumorphic-btn">
+                                    <i class="fas fa-crop-alt"></i> Komposisi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="neumorphic-card">
+                    <h3>Hasil Gambar</h3>
+                    <div id="generatorResult" class="result-display">
+                        <p>Gambar akan muncul di sini...</p>
+                        <img id="generatedImage" class="image-preview" style="display: none;">
+                    </div>
+                    
+                    <div class="action-buttons" id="imageActions" style="display: none;">
+                        <button id="downloadBtn" class="neumorphic-btn btn-secondary">
+                            <i class="fas fa-download"></i> Unduh
+                        </button>
+                        <button id="useForAnalysisBtn" class="neumorphic-btn btn-secondary">
+                            <i class="fas fa-search"></i> Analisis Gambar Ini
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="history-container" id="historyContainer">
+                    <h3>Riwayat</h3>
+                    <div id="historyList"></div>
+                    
+                    <div class="action-buttons">
+                        <button id="clearHistoryBtn" class="neumorphic-btn btn-danger">
+                            <i class="fas fa-trash"></i> Hapus Riwayat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analisis Gambar ke Teks -->
+        <div class="tool-container">
+            <button class="toggle-header" id="analyzerToggle">
+                <h2><i class="fas fa-image"></i> IMG to Teks</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            
+            <div class="toggle-content" id="analyzerContent">
+                <div class="neumorphic-card">
+                    <p>Unggah gambar untuk dianalisis dan dikonversi menjadi deskripsi teks</p>
+                    
+                    <label for="imageUpload" class="neumorphic-file-input">
+                        <div class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Pilih Gambar</span>
+                        </div>
+                        <img id="imagePreview" class="image-preview" alt="Pratinjau Gambar">
+                    </label>
+                    <input type="file" id="imageUpload" accept="image/*">
+                    
+                    <label for="analyzerPrompt">Prompt Analisis (opsional):</label>
+                    <input type="text" id="analyzerPrompt" class="neumorphic-input" 
+                           placeholder="Contoh: Jelaskan gambar ini secara detail, Apa yang terjadi dalam gambar ini?, dll.">
+                    
+                    <button id="analyzeBtn" class="neumorphic-btn btn-primary" disabled>
+                        <i class="fas fa-search"></i> Analisis Gambar
+                    </button>
+                </div>
+                
+                <div class="neumorphic-card">
+                    <h3>Hasil Analisis</h3>
+                    <div id="analyzerResult" class="result-display">Hasil analisis akan muncul di sini...</div>
+                    
+                    <div id="actionButtons" class="action-buttons" style="display: none;">
+                        <button id="usePromptBtn" class="neumorphic-btn btn-secondary">
+                            <i class="fas fa-magic"></i> Gunakan untuk Generasi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="app-footer">
+        <div class="footer-content">
+            &copy; <span id="currentYear"></span> <strong>Sicba</strong> (Squad Image Creator Bing AI) | Dibuat dengan ♥️ Oleh Team SICBA Crew| Powered by 
+            <a href="https://Pollinations.ai" target="_blank">Pollinations.AI</a>
+        </div>
+    </footer>
+    
+    <script>
+        // Update current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Theme Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            const root = document.documentElement;
+
+            // Initialize theme
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            body.classList.toggle('dark-theme', currentTheme === 'dark');
+            updateThemeIcon();
+
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-theme');
+                const theme = body.classList.contains('dark-theme') ? 'dark' : 'light';
+                localStorage.setItem('theme', theme);
+                updateThemeIcon();
+                updateThemeVariables();
+            });
+
+            function updateThemeIcon() {
+                const icon = themeToggle.querySelector('i');
+                icon.classList.toggle('fa-moon', !body.classList.contains('dark-theme'));
+                icon.classList.toggle('fa-sun', body.classList.contains('dark-theme'));
+            }
+
+            function updateThemeVariables() {
+                if (body.classList.contains('dark-theme')) {
+                    root.style.setProperty('--bg-color', '#1a1a1a');
+                    root.style.setProperty('--text-color', '#ffffff');
+                    root.style.setProperty('--shadow-dark', '#0d0d0d');
+                    root.style.setProperty('--shadow-light', '#272727');
+                    root.style.setProperty('--highlight-color', '#2a2a2a');
+                } else {
+                    root.style.setProperty('--bg-color', '#ffffff');
+                    root.style.setProperty('--text-color', '#000000');
+                    root.style.setProperty('--shadow-dark', '#d0d0d0');
+                    root.style.setProperty('--shadow-light', '#f0f0f0');
+                    root.style.setProperty('--highlight-color', '#f5f5f5');
+                }
+            }
+        });
+    </script>
+
+    <script src="assets/main.js"></script>
+    <script src="assets/enhance.js"></script>
+    <script src="assets/terjemahan.js"></script>
+</body>
+</html>
+</body>
+</html>
