@@ -629,7 +629,17 @@ input[type="file"] {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.prompt-note {
+    font-size: 0.8rem;
+    color: #ff3333;
+    margin-bottom: 8px;
+    text-align: center;
+    font-style: italic;
+}
 
+.dark-theme .prompt-note {
+    color: #ff6666;
+}
 /* ========== SCROLLBAR ========== */
 #historyList::-webkit-scrollbar {
   width: 7px;
