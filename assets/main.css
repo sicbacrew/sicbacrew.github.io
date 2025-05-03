@@ -640,6 +640,7 @@ input[type="file"] {
 .dark-theme .prompt-note {
     color: #ff6666;
 }
+
 /* ========== SCROLLBAR ========== */
 #historyList::-webkit-scrollbar {
   width: 7px;
@@ -831,5 +832,53 @@ input[type="file"] {
     #clearPromptBtn {
         width: auto;
         min-width: 120px;
+    }
+}
+/* ========== USER AGENT STYLES ========== */
+.user-agent-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 15px;
+    padding: 0 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.user-agent-info {
+    background: var(--highlight-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 3px 3px 6px var(--shadow-dark),
+               -3px -3px 6px var(--shadow-light);
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy-agent-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 0.7rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.copy-agent-btn:hover {
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-agent-info {
+        font-size: 0.65rem;
+        padding: 6px 12px;
     }
 }
