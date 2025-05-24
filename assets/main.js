@@ -6,7 +6,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Deklarasi variabel dengan let untuk bisa di-reassign
     let generatedImage = document.getElementById('generatedImage');
+    let currentImageLoading = null;
+
+    // Fungsi penyimpanan teks
+    function savePromptToStorage() {
+        localStorage.setItem('savedPrompt', generatorPrompt.value);
+        localStorage.setItem('savedNegativePrompt', negativePrompt.value);
+    }
     
+    function loadPromptFromStorage() {
+        const savedPrompt = localStorage.getItem('savedPrompt');
+        const savedNegative = localStorage.getItem('savedNegativePrompt');
+        if (savedPrompt) generatorPrompt.value = savedPrompt;
+        if (savedNegative) negativePrompt.value = savedNegative;
+    }
+    
+    function saveAnalyzerPrompt() {
+        localStorage.setItem('savedAnalyzerPrompt', analyzerPrompt.value);
+    }
+    
+    function loadAnalyzerPrompt() {
+        const saved = localStorage.getItem('savedAnalyzerPrompt');
+        if (saved) analyzerPrompt.value = saved;
+    }
+
     // Toggle pengaturan lanjutan
     const advancedToggle = document.getElementById('advancedToggle');
     const advancedContent = document.getElementById('advancedContent');
@@ -79,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentPrompt = generatorPrompt.value;
             if (!currentPrompt.includes(this.dataset.style)) {
                 generatorPrompt.value = `${currentPrompt}, ${this.dataset.style} style`.trim();
+                savePromptToStorage();
             }
         });
     });
@@ -98,18 +122,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const lightingOptions = ['soft lighting', 'dramatic lighting', 'cinematic lighting', 'neon lighting', 'natural lighting'];
         const selected = lightingOptions[Math.floor(Math.random() * lightingOptions.length)];
         generatorPrompt.value = `${generatorPrompt.value}, ${selected}`.trim();
+        savePromptToStorage();
     });
     
     document.getElementById('addColorBtn').addEventListener('click', function() {
         const colorOptions = ['vibrant colors', 'pastel colors', 'monochrome', 'warm tones', 'cool tones'];
         const selected = colorOptions[Math.floor(Math.random() * colorOptions.length)];
         generatorPrompt.value = `${generatorPrompt.value}, ${selected}`.trim();
+        savePromptToStorage();
     });
     
     document.getElementById('addCompositionBtn').addEventListener('click', function() {
         const compositionOptions = ['rule of thirds', 'symmetrical composition', 'close-up', 'wide angle', 'overhead view'];
         const selected = compositionOptions[Math.floor(Math.random() * compositionOptions.length)];
         generatorPrompt.value = `${generatorPrompt.value}, ${selected}`.trim();
+        savePromptToStorage();
     });
     
     // Pratinjau unggahan gambar
@@ -160,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const description = analyzerResult.textContent.replace('Hasil Analisis:', '').trim();
         if (description) {
             generatorPrompt.value = description;
+            savePromptToStorage();
             document.getElementById('generatorToggle').scrollIntoView({ behavior: 'smooth' });
         }
     });
@@ -169,6 +197,8 @@ document.addEventListener('DOMContentLoaded', function() {
         generatorPrompt.value = '';
         negativePrompt.value = '';
         seedInput.value = '';
+        localStorage.removeItem('savedPrompt');
+        localStorage.removeItem('savedNegativePrompt');
     });
     
     // Tombol generate gambar (VERSI TERBARU YANG SUDAH DIPERBAIKI)
@@ -179,28 +209,40 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Hapus gambar lama dari DOM jika ada
+        // 1. Hentikan proses loading sebelumnya jika ada
+        if (currentImageLoading) {
+            currentImageLoading.onload = null;
+            currentImageLoading.onerror = null;
+            if (currentImageLoading.parentNode) {
+                currentImageLoading.parentNode.removeChild(currentImageLoading);
+            }
+        }
+
+        // 2. Hapus gambar lama dari DOM
         if (generatedImage && generatedImage.parentNode) {
             generatedImage.parentNode.removeChild(generatedImage);
         }
         
-        // Buat elemen gambar baru
+        // 3. Buat elemen gambar baru
         generatedImage = document.createElement('img');
         generatedImage.id = 'generatedImage';
         generatedImage.className = 'image-preview';
         generatedImage.style.display = 'none';
+        currentImageLoading = generatedImage;
         
-        // Bersihkan dan tampilkan loading
+        // 4. Bersihkan dan tampilkan loading state
         generatorResult.innerHTML = '';
-        generatorResult.innerHTML = `
-            <div class="image-loading-container">
-                <div class="image-loading-spinner"></div>
-                <p style="margin-top: 15px;">Membuat gambar baru...</p>
-            </div>
+        const loadingContainer = document.createElement('div');
+        loadingContainer.className = 'image-loading-container';
+        loadingContainer.innerHTML = `
+            <div class="image-loading-spinner"></div>
+            <p style="margin-top: 15px;">Membuat gambar baru...</p>
         `;
+        generatorResult.appendChild(loadingContainer);
+        
         document.getElementById('imageActions').style.display = 'none';
         
-        // Update tombol
+        // 5. Update tombol
         generateBtn.disabled = true;
         generateBtn.innerHTML = '<span class="loading"></span> Memproses...';
 
@@ -238,6 +280,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?${params.toString()}`;
             
             generatedImage.onload = function() {
+                // Pastikan ini masih gambar yang sedang diproses
+                if (generatedImage !== currentImageLoading) return;
+                
                 // Hapus loading state
                 generatorResult.innerHTML = '';
                 
@@ -250,20 +295,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 generateBtn.innerHTML = '<i class="fas fa-cogs"></i> Hasilkan Gambar';
                 document.getElementById('imageActions').style.display = 'flex';
                 
-                // Scroll ke hasil
-                document.getElementById('generatorResult').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-                
-                // Tambahkan ke riwayat (FIXED)
+                // Tambahkan ke riwayat
                 addToHistory(prompt, imageUrl, selectedSize);
+                
+                // Reset loading state
+                currentImageLoading = null;
             };
             
             generatedImage.onerror = function() {
+                if (generatedImage !== currentImageLoading) return;
+                
                 generatorResult.innerHTML = '<p class="error-message">Gagal menghasilkan gambar. Silakan coba dengan prompt berbeda.</p>';
                 generateBtn.disabled = false;
                 generateBtn.innerHTML = '<i class="fas fa-cogs"></i> Hasilkan Gambar';
+                currentImageLoading = null;
             };
             
             // Mulai load gambar
@@ -274,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
             generatorResult.innerHTML = '<p class="error-message">Gagal menghasilkan gambar. Silakan coba lagi.</p>';
             generateBtn.disabled = false;
             generateBtn.innerHTML = '<i class="fas fa-cogs"></i> Hasilkan Gambar';
+            currentImageLoading = null;
         }
     });
     
@@ -324,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Fungsi tambahkan ke riwayat (FIXED VERSION)
+    // Fungsi tambahkan ke riwayat
     function addToHistory(prompt, imageUrl, size) {
         let history = JSON.parse(localStorage.getItem('generationHistory')) || [];
         history.unshift({
@@ -335,7 +381,6 @@ document.addEventListener('DOMContentLoaded', function() {
             timestamp: new Date().toISOString()
         });
         
-        // Batasi riwayat hanya 10 item terbaru
         if (history.length > 10) {
             history = history.slice(0, 10);
         }
@@ -376,7 +421,6 @@ document.addEventListener('DOMContentLoaded', function() {
             historyList.appendChild(historyItem);
         });
         
-        // Event listeners untuk tombol riwayat
         document.querySelectorAll('.use-history-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const index = btn.closest('.history-item').dataset.index;
@@ -385,6 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (item) {
                     generatorPrompt.value = item.prompt;
+                    savePromptToStorage();
                     imageSizeSelect.value = item.size;
                     qualitySlider.value = item.quality;
                     qualityValue.textContent = `${item.quality}%`;
@@ -429,7 +474,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Muat riwayat saat halaman dimuat
+    // Event listeners untuk penyimpanan teks
+    generatorPrompt.addEventListener('input', savePromptToStorage);
+    negativePrompt.addEventListener('input', savePromptToStorage);
+    analyzerPrompt.addEventListener('input', saveAnalyzerPrompt);
+    
+    // Muat data saat halaman dimuat
+    loadPromptFromStorage();
+    loadAnalyzerPrompt();
     renderHistory();
     
     // Fungsi konversi file ke base64
