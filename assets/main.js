@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.floor(Math.random() * 1000000000).toString();
     }
 
+    // Deklarasi variabel dengan let untuk bisa di-reassign
+    let generatedImage = document.getElementById('generatedImage');
+    
     // Toggle pengaturan lanjutan
     const advancedToggle = document.getElementById('advancedToggle');
     const advancedContent = document.getElementById('advancedContent');
@@ -29,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const generatorPrompt = document.getElementById('generatorPrompt');
     const generateBtn = document.getElementById('generateBtn');
     const generatorResult = document.getElementById('generatorResult');
-    const generatedImage = document.getElementById('generatedImage');
     const clearPromptBtn = document.getElementById('clearPromptBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const useForAnalysisBtn = document.getElementById('useForAnalysisBtn');
@@ -169,20 +171,39 @@ document.addEventListener('DOMContentLoaded', function() {
         seedInput.value = '';
     });
     
-    // Tombol generate gambar
+    // Tombol generate gambar (VERSI TERBARU YANG SUDAH DIPERBAIKI)
     generateBtn.addEventListener('click', async function() {
         const prompt = generatorPrompt.value.trim();
         if (!prompt) {
             alert('Silakan masukkan prompt');
             return;
         }
+
+        // Hapus gambar lama dari DOM jika ada
+        if (generatedImage && generatedImage.parentNode) {
+            generatedImage.parentNode.removeChild(generatedImage);
+        }
         
-        generateBtn.disabled = true;
-        generateBtn.innerHTML = '<span class="loading"></span> Menghasilkan...';
-        generatorResult.innerHTML = '<p>Sedang menghasilkan gambar...</p>';
+        // Buat elemen gambar baru
+        generatedImage = document.createElement('img');
+        generatedImage.id = 'generatedImage';
+        generatedImage.className = 'image-preview';
         generatedImage.style.display = 'none';
+        
+        // Bersihkan dan tampilkan loading
+        generatorResult.innerHTML = '';
+        generatorResult.innerHTML = `
+            <div class="image-loading-container">
+                <div class="image-loading-spinner"></div>
+                <p style="margin-top: 15px;">Membuat gambar baru...</p>
+            </div>
+        `;
         document.getElementById('imageActions').style.display = 'none';
         
+        // Update tombol
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<span class="loading"></span> Memproses...';
+
         try {
             const selectedSize = imageSizeSelect.value;
             const [width, height] = selectedSize.split('x');
@@ -198,17 +219,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 params.append('negative', negativePrompt.value.trim());
             }
             
-            // Selalu gunakan seed acak baru setiap kali generate
+            // Generate seed baru
             const randomSeed = generateRandomSeed();
             params.append('seed', randomSeed);
-            seedInput.value = randomSeed; // Update input field dengan seed baru
+            seedInput.value = randomSeed;
             
-            // Tambahkan parameter slider
+            // Parameter tambahan
             params.append('creativity', (creativitySlider.value / 100).toFixed(2));
             params.append('detail', (detailSlider.value / 100).toFixed(2));
             params.append('style_consistency', (styleSlider.value / 100).toFixed(2));
             
-            // Tambahkan gaya artistik jika dipilih
             const activeStyle = document.querySelector('.style-preset.active');
             if (activeStyle) {
                 params.append('style', activeStyle.dataset.style);
@@ -217,33 +237,41 @@ document.addEventListener('DOMContentLoaded', function() {
             const encodedPrompt = encodeURIComponent(prompt);
             const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?${params.toString()}`;
             
-            const img = new Image();
-            img.onload = function() {
-                generatedImage.src = imageUrl;
-                generatedImage.style.display = 'block';
+            generatedImage.onload = function() {
+                // Hapus loading state
                 generatorResult.innerHTML = '';
+                
+                // Tampilkan gambar baru
+                generatedImage.style.display = 'block';
                 generatorResult.appendChild(generatedImage);
+                
+                // Aktifkan tombol
                 generateBtn.disabled = false;
                 generateBtn.innerHTML = '<i class="fas fa-cogs"></i> Hasilkan Gambar';
                 document.getElementById('imageActions').style.display = 'flex';
                 
+                // Scroll ke hasil
                 document.getElementById('generatorResult').scrollIntoView({
                     behavior: 'smooth',
                     block: 'center'
                 });
                 
+                // Tambahkan ke riwayat (FIXED)
                 addToHistory(prompt, imageUrl, selectedSize);
             };
-            img.onerror = function() {
-                generatorResult.innerHTML = '<p>Gagal menghasilkan gambar. Silakan coba dengan prompt berbeda.</p>';
+            
+            generatedImage.onerror = function() {
+                generatorResult.innerHTML = '<p class="error-message">Gagal menghasilkan gambar. Silakan coba dengan prompt berbeda.</p>';
                 generateBtn.disabled = false;
                 generateBtn.innerHTML = '<i class="fas fa-cogs"></i> Hasilkan Gambar';
             };
-            img.src = imageUrl;
+            
+            // Mulai load gambar
+            generatedImage.src = imageUrl;
             
         } catch (error) {
             console.error('Error:', error);
-            generatorResult.innerHTML = '<p>Gagal menghasilkan gambar. Silakan coba lagi dengan prompt berbeda.</p>';
+            generatorResult.innerHTML = '<p class="error-message">Gagal menghasilkan gambar. Silakan coba lagi.</p>';
             generateBtn.disabled = false;
             generateBtn.innerHTML = '<i class="fas fa-cogs"></i> Hasilkan Gambar';
         }
@@ -296,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Fungsi tambahkan ke riwayat
+    // Fungsi tambahkan ke riwayat (FIXED VERSION)
     function addToHistory(prompt, imageUrl, size) {
         let history = JSON.parse(localStorage.getItem('generationHistory')) || [];
         history.unshift({
@@ -307,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
             timestamp: new Date().toISOString()
         });
         
+        // Batasi riwayat hanya 10 item terbaru
         if (history.length > 10) {
             history = history.slice(0, 10);
         }
@@ -347,6 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
             historyList.appendChild(historyItem);
         });
         
+        // Event listeners untuk tombol riwayat
         document.querySelectorAll('.use-history-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const index = btn.closest('.history-item').dataset.index;
