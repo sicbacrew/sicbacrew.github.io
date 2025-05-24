@@ -1,23 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Fungsi toggle
-    function setupToggle(toggleId, contentId) {
-        const toggle = document.getElementById(toggleId);
-        const content = document.getElementById(contentId);
-        const icon = toggle.querySelector('.toggle-icon');
-        
-        let isCollapsed = content.classList.contains('collapsed');
-        
-        toggle.addEventListener('click', function() {
-            isCollapsed = !isCollapsed;
-            content.classList.toggle('collapsed');
-            icon.classList.toggle('collapsed');
-        });
+    // Fungsi untuk menghasilkan seed acak
+    function generateRandomSeed() {
+        return Math.floor(Math.random() * 1000000000).toString();
     }
-    
-    // Inisialisasi toggle
-    setupToggle('analyzerToggle', 'analyzerContent');
-    setupToggle('generatorToggle', 'generatorContent');
-    
+
     // Toggle pengaturan lanjutan
     const advancedToggle = document.getElementById('advancedToggle');
     const advancedContent = document.getElementById('advancedContent');
@@ -212,9 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 params.append('negative', negativePrompt.value.trim());
             }
             
-            if (seedInput.value.trim()) {
-                params.append('seed', seedInput.value.trim());
-            }
+            // Selalu gunakan seed acak baru setiap kali generate
+            const randomSeed = generateRandomSeed();
+            params.append('seed', randomSeed);
+            seedInput.value = randomSeed; // Update input field dengan seed baru
             
             // Tambahkan parameter slider
             params.append('creativity', (creativitySlider.value / 100).toFixed(2));
