@@ -44,29 +44,21 @@
     <div class="main-container">
         <!-- Generator Teks ke Gambar -->
         <div class="tool-container">
-            <button class="toggle-header" id="generatorToggle">
+            <div class="section-header">
                 <h2><i class="fas fa-wand-magic-sparkles"></i> Text-To-Image</h2>
-                <i class="fas fa-chevron-down toggle-icon"></i>
-            </button>
+            </div>
             
-            <div class="toggle-content" id="generatorContent">
+            <div class="section-content">
                 <div class="neumorphic-card">
                     <p>Masukkan prompt</p>           
                     <div class="textarea-container">
-                    	                        <button id="clearPromptBtn" class="neumorphic-btn btn-secondary">
+                        <button id="clearPromptBtn" class="neumorphic-btn btn-secondary">
                             <i class="fas fa-trash"></i> Clear Prompt
                         </button>
-<div class="prompt-button-container">
-                     <!--   <div class="enhance-prompt-container">
-                            <button id="enhancePromptBtn" class="neumorphic-btn btn-secondary">
-                                <i class="fas fa-wand-magic-sparkles"></i> Enhance Prompt
-                            </button>
-                            <span class="enhance-tooltip">Get AI suggestions to improve your prompt (GPT-4 Turbo)</span>
-                        </div> -->
-                        
-
-                    </div>
-<p class="prompt-note">Gunakan bahasa inggris untuk hasil terbaik</p>
+                        <div class="prompt-button-container">
+                            <!-- Prompt buttons container -->
+                        </div>
+                        <p class="prompt-note">Gunakan bahasa inggris untuk hasil terbaik</p>
                         <textarea id="generatorPrompt" class="neumorphic-textarea" placeholder="Contoh: Sebuah pemandangan gunung dengan matahari terbenam, gaya lukisan minyak"></textarea>
                     </div>
                                         
@@ -204,12 +196,11 @@
         
         <!-- Analisis Gambar ke Teks -->
         <div class="tool-container">
-            <button class="toggle-header" id="analyzerToggle">
+            <div class="section-header">
                 <h2><i class="fas fa-image"></i> IMG to Teks</h2>
-                <i class="fas fa-chevron-down toggle-icon"></i>
-            </button>
+            </div>
             
-            <div class="toggle-content" id="analyzerContent">
+            <div class="section-content">
                 <div class="neumorphic-card">
                     <p>Unggah gambar untuk dianalisis dan dikonversi menjadi deskripsi teks</p>
                     
